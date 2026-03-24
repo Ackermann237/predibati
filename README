@@ -1,0 +1,149 @@
+# 🏗️ PrediBâti — Plateforme de Maintenance Prédictive Immobilière
+
+> Projet réalisé dans le cadre d'une candidature au poste d'**Apprenti Data Scientist** chez **Oxand**
+> — leader de la PredTech spécialisée dans l'optimisation des plans de maintenance immobilière.
+
+[![Python](https://img.shields.io/badge/Python-3.10-blue?logo=python)](https://python.org)
+[![XGBoost](https://img.shields.io/badge/XGBoost-R²=0.966-green)](https://xgboost.readthedocs.io)
+[![Streamlit](https://img.shields.io/badge/Streamlit-Dashboard-red?logo=streamlit)](https://streamlit.io)
+[![LLM](https://img.shields.io/badge/LLM-LLaMA%203.3%20via%20Groq-purple)](https://groq.com)
+[![Docker](https://img.shields.io/badge/Docker-Ready-blue?logo=docker)](https://docker.com)
+
+---
+
+## 🎯 Objectif
+
+Simuler le cœur de métier d'Oxand : **prédire le score de dégradation** de bâtiments parisiens
+à partir de données réelles (DPE ADEME), et le rendre exploitable via une plateforme interactive
+avec agent LLM intégré.
+
+---
+
+## 🏗️ Architecture complète
+```
+Open Data ADEME (API DPE)
+        ↓
+  Pipeline ETL Python        ← fetch_dpe.py + clean_dpe.py
+        ↓
+  Feature Engineering        ← Score de dégradation (0-100)
+        ↓
+  Modèle ML XGBoost          ← R²=0.966 | MAE=1.62 pts
+        ↓
+  Interprétabilité SHAP      ← Facteurs clés identifiés
+        ↓
+  Dashboard Streamlit        ← 4 onglets interactifs
+        ↓
+  Agent LLM (LLaMA 3.3)      ← RAG sur données filtrées
+```
+
+---
+
+## 📊 Résultats du modèle
+
+| Métrique | Valeur |
+|----------|--------|
+| R² (test) | **0.966** |
+| MAE | **1.62 points** |
+| CV R² (5-fold) | **0.979 ± 0.005** |
+| Features | 12 variables DPE |
+
+**Top features SHAP :** qualité isolation > étiquette DPE > consommation énergie > âge bâtiment
+
+---
+
+## 🖥️ Dashboard — 4 onglets
+
+| Onglet | Contenu |
+|--------|---------|
+| 📊 Vue Globale | KPIs, distributions, scatter, Top 10 bâtiments |
+| 🗺️ Carte & Analyse | Carte Paris colorée par risque, stats par arrondissement |
+| 🤖 Simulateur IA | Prédiction en temps réel + recommandation |
+| 💬 Agent IA | LLaMA 3.3 connecté aux données filtrées |
+
+---
+
+## 🗂️ Structure du projet
+```
+predibati/
+├── src/
+│   ├── etl/
+│   │   ├── fetch_dpe.py       # Ingestion API ADEME
+│   │   ├── clean_dpe.py       # Nettoyage + Feature Engineering
+│   │   └── data/
+│   │       ├── raw/           # Données brutes
+│   │       └── processed/     # Données nettoyées
+│   ├── models/
+│   │   └── train_model.py     # XGBoost + SHAP
+│   ├── dashboard/
+│   │   └── app.py             # Streamlit 4 onglets
+│   └── assets/
+│       └── animation_2.json   # Animation Lottie
+├── notebooks/                 # EDA exploratoire
+├── .env                       # GROQ_API_KEY (non commité)
+├── requirements.txt
+├── Dockerfile
+└── README.md
+```
+
+---
+
+## 🚀 Installation & Lancement
+
+### Option 1 — Python local
+```bash
+# Cloner le projet
+git clone https://github.com/AndreAmougou/predibati.git
+cd predibati
+
+# Installer les dépendances
+pip install -r requirements.txt
+
+# Configurer la clé API
+echo "GROQ_API_KEY=votre_clé" > .env
+
+# Lancer le pipeline ETL
+python src/etl/fetch_dpe.py
+python src/etl/clean_dpe.py
+
+# Entraîner le modèle
+python src/models/train_model.py
+
+# Lancer le dashboard
+streamlit run src/dashboard/app.py
+```
+
+### Option 2 — Docker
+```bash
+docker build -t predibati .
+docker run -p 8501:8501 --env-file .env predibati
+# → Ouvrir http://localhost:8501
+```
+
+---
+
+## 🛠️ Stack technique
+
+| Catégorie | Technologies |
+|-----------|-------------|
+| Langage | Python 3.10 |
+| ETL | Pandas, Requests, PyProj |
+| ML | XGBoost, Scikit-learn, SHAP |
+| Dashboard | Streamlit, Plotly, Folium |
+| LLM | LLaMA 3.3-70b via Groq API |
+| MLOps | Docker, Git, Joblib |
+| Data | ADEME Open Data (DPE) |
+
+---
+
+## 👤 Auteur
+
+**André Amougou** — Data Scientist  
+Master Big Data & IA — ESTIAM Paris  
+[LinkedIn](https://linkedin.com) · [GitHub](https://github.com) · [Portfolio](https://portfolio.com)
+
+---
+
+## 📄 Licence
+
+Données : [Licence Ouverte ADEME](https://data.ademe.fr)  
+Code : MIT License
